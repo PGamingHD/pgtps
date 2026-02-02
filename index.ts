@@ -220,7 +220,7 @@ app.post("/player/signup", async (req: Request, res: Response) => {
   const token = axiosRes.data.token;
 
   res.setHeader("Content-Type", "text/html");
-  res.json({
+  res.status(200).json({
     status: "success",
     message: "Account Validated.",
     token,
