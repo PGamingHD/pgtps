@@ -217,8 +217,11 @@ app.post("/player/signup", async (req: Request, res: Response) => {
     { httpsAgent },
   );
 
-  res.status(axiosRes.status).send(JSON.stringify(axiosRes.data));
-  //res.status(200).json({ status: "success", message: "Signup successful" });
+  const token = axiosRes.data.token;
+
+  res.send(
+    `{"status":"success","message":"Token is valid.","token":"${token}","url":"","accountType":"growtopia"}`,
+  );
 });
 
 app.listen(PORT, () => {
