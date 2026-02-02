@@ -209,10 +209,13 @@ app.post("/player/signup", async (req: Request, res: Response) => {
     rejectUnauthorized: false,
   });
 
-  const axiosRes = await axios.post("https://129.151.212.61/player/signup", {
-    httpsAgent,
-    body: { data: { growId, password, confirmPassword: password } },
-  });
+  const axiosRes = await axios.post(
+    "https://129.151.212.61/player/signup",
+    {
+      body: { data: { growId, password, confirmPassword: password } },
+    },
+    { httpsAgent },
+  );
 
   //res.status(axiosRes.status).json(axiosRes.data);
   res.status(200).json({ status: "success", message: "Signup successful" });
