@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 import path from "path";
 import fs from "fs";
 import jwt from "jsonwebtoken";
+import axios from "axios";
 
 const app = express();
 const PORT = 3000;
@@ -120,6 +121,16 @@ app.all(
         JWT_SECRET,
         { expiresIn: "24h" },
       );
+
+      const res = await axios.post(
+        "https://129.151.212.61:8080/player/login/validate",
+        {
+          growId: "heyhey",
+          password: "heyhey123",
+        },
+      );
+
+      console.log(res);
 
       /*await fetch(
         "https://129.151.212.61/player/growid/login/validate?token=test",
