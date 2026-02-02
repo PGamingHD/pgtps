@@ -214,7 +214,7 @@ app.post("/player/signup", async (req: Request, res: Response) => {
 
   const axiosRes = await axios.post("https://129.151.212.61/player/signup", {
     httpsAgent,
-    body: { growId, password, confirmPassword },
+    body: { data: { growId, password, confirmPassword } },
   });
 
   res.status(axiosRes.status).json(axiosRes.data);
