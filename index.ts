@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import https from "https";
 
 const app = express();
 const PORT = 3000;
@@ -118,8 +119,13 @@ app.all(
         { expiresIn: "24h" },
       );
 
+      const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+
       await axios.get(
         "https://129.151.212.61/player/growid/login/validate?token=test",
+        { httpsAgent },
       );
 
       res.setHeader("Content-Type", "text/html");
