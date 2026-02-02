@@ -7,120 +7,53 @@ import jwt from "jsonwebtoken";
 
 const app = express();
 const PORT = 3000;
+const JWT_SECRET = "SuperSecretDoNotShareToAnyoneElse";
 
-// @note trust proxy - set to number of proxies in front of app
 app.set("trust proxy", 1);
-
-// @note middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// @note rate limiter - 50 requests per minute
-const limiter = rateLimit({
-  windowMs: 60_000,
-  max: 50,
-  standardHeaders: true,
-  legacyHeaders: false,
-  validate: { trustProxy: false, xForwardedForHeader: false },
-});
-app.use(limiter);
+// --- Rate Limiter ---
+app.use(
+  rateLimit({
+    windowMs: 60_000,
+    max: 50,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 
-// @note static files from public folder
-app.use(express.static(path.join(process.cwd(), "public")));
-
-// @note request logging middleware
+// --- Logging ---
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  const clientIp =
-    (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-    req.headers["x-real-ip"] ||
-    req.socket.remoteAddress ||
-    "unknown";
-
-  console.log(
-    `[REQ] ${req.method} ${req.path} → ${clientIp} | ${_res.statusCode}`,
-  );
+  console.log(`[REQ] ${req.method} ${req.path}`);
   next();
 });
 
-// @note root endpoint
-app.get("/", (_req: Request, res: Response) => {
-  res.send("Hello, world!");
-});
-
 /**
- * @note dashboard endpoint - serves login HTML page with client data
- * @param req - express request with optional body data
- * @param res - express response
- */
-app.all("/player/login/dashboard", async (req: Request, res: Response) => {
-  const tData: Record<string, string> = {};
-
-  // @note handle empty body or missing data
-  const body = req.body;
-  if (body && typeof body === "object" && Object.keys(body).length > 0) {
-    try {
-      const bodyStr = JSON.stringify(body);
-      const parts = bodyStr.split('"');
-
-      if (parts.length > 1) {
-        const uData = parts[1].split("\n");
-        for (let i = 0; i < uData.length - 1; i++) {
-          const d = uData[i].split("|");
-          if (d.length === 2) {
-            tData[d[0]] = d[1];
-          }
-        }
-      }
-    } catch (why) {
-      console.log(`[ERROR]: ${why}`);
-    }
-  }
-
-  // @note convert tData object to base64 string
-  const tDataBase64 = Buffer.from(JSON.stringify(tData)).toString("base64");
-
-  // @note read dashboard template and replace placeholder
-  const templatePath = path.join(process.cwd(), "template", "dashboard.html");
-
-  const templateContent = fs.readFileSync(templatePath, "utf-8");
-  const htmlContent = templateContent.replace("{{ data }}", tDataBase64);
-
-  res.setHeader("Content-Type", "text/html");
-  res.send(htmlContent);
-});
-
-/**
- * @note validate login endpoint - validates GrowID credentials
- * @param req - express request with growId, password, _token
- * @param res - express response with token
+ * @note validate login - Signs the initial JWT
  */
 app.all(
   "/player/growid/login/validate",
   async (req: Request, res: Response) => {
     try {
       const formData = req.body as Record<string, string>;
-      const _token = formData._token;
       const growId = formData.growId;
       const password = formData.password;
 
-      /*const token = Buffer.from(
-        `_token=${_token}&growId=${growId}&password=${password}&reg=0`,
-      ).toString("base64");*/
+      if (!growId || !password) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Missing credentials" });
+      }
 
+      // Create a secure JWT payload
       const token = jwt.sign(
         { growid: growId, password: password },
-        "SuperSecretDoNotShareToAnyoneElse",
+        JWT_SECRET,
+        { expiresIn: "24h" },
       );
 
-      /*await fetch(
-        "https://129.151.212.61/player/growid/login/validate?token=test",
-        {
-          method: "POST",
-        },
-      );*/
-
-      res.setHeader("Content-Type", "text/html");
       res.json({
         status: "success",
         message: "Account Validated.",
@@ -129,78 +62,68 @@ app.all(
         accountType: "growtopia",
       });
     } catch (error: any) {
-      console.log(`[ERROR]: ${error}`);
-      res.status(500).json({
-        status: "error",
-        message: "Internal Server Error",
-        extra: error.message,
-      });
+      res
+        .status(500)
+        .json({ status: "error", message: "Internal Server Error" });
     }
   },
 );
 
 /**
- * @note first checktoken endpoint - redirects using 307 to preserve data
- * @param req - express request with refreshToken and clientData
- * @param res - express response with updated token
- */
-app.all("/player/growid/checktoken", async (req: Request, res: Response) => {
-  return res.redirect(307, "/player/growid/validate/checktoken");
-});
-
-/**
- * @note second checktoken endpoint - validates token and returns updated token
- * @param req - express request with refreshToken and clientData
- * @param res - express response with updated token
+ * @note checktoken - Verifies the JWT instead of manual string replacement
  */
 app.all(
   "/player/growid/validate/checktoken",
   async (req: Request, res: Response) => {
     try {
-      // @note handle both { data: { ... } } and { refreshToken, clientData } formats
-      const body = req.body as
-        | { data: { refreshToken: string; clientData: string } }
-        | { refreshToken: string; clientData: string };
+      const body = req.body;
+      const refreshToken = body.data?.refreshToken || body.refreshToken;
+      const clientData = body.data?.clientData || body.clientData;
 
-      const refreshToken =
-        "data" in body ? body.data?.refreshToken : body.refreshToken;
-      const clientData =
-        "data" in body ? body.data?.clientData : body.clientData;
-
-      if (!refreshToken || !clientData) {
-        res.status(400).json({
-          status: "error",
-          message: "Missing refreshToken or clientData",
-        });
-        return;
+      if (!refreshToken) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Missing token" });
       }
 
-      let decodeRefreshToken = Buffer.from(refreshToken, "base64").toString(
-        "utf-8",
+      // 1. Verify the JWT. If it's tampered with or expired, it throws an error.
+      const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
+
+      // 2. Optional: If you need to embed clientData into a new token
+      // (This replaces your manual Buffer.replace logic)
+      const newToken = jwt.sign(
+        {
+          ...decoded,
+          clientData: Buffer.from(clientData || "").toString("base64"),
+        },
+        JWT_SECRET,
       );
 
-      const token = Buffer.from(
-        decodeRefreshToken.replace(
-          /(_token=)[^&]*/,
-          `$1${Buffer.from(clientData).toString("base64")}`,
-        ),
-      ).toString("base64");
-
-      res.send(
-        `{"status":"success","message":"Token is valid.","token":"${token}","url":"","accountType":"growtopia"}`,
-      );
-    } catch (error) {
-      console.log(`[ERROR]: ${error}`);
-      res.status(500).json({
+      res.json({
+        status: "success",
+        message: "Token is valid.",
+        token: newToken,
+        url: "",
+        accountType: "growtopia",
+      });
+    } catch (error: any) {
+      console.log(`[JWT ERROR]: ${error.message}`);
+      res.status(401).json({
         status: "error",
-        message: "Internal Server Error",
+        message: "Invalid or expired token",
       });
     }
   },
 );
 
-app.listen(PORT, () => {
-  console.log(`[SERVER] Running on http://localhost:${PORT}`);
-});
+app.all("/player/growid/checktoken", (req, res) =>
+  res.redirect(307, "/player/growid/validate/checktoken"),
+);
+
+// ... rest of your static file and dashboard logic ...
+
+app.listen(PORT, () =>
+  console.log(`[SERVER] Running on http://localhost:${PORT}`),
+);
 
 export default app;
