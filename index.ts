@@ -112,22 +112,18 @@ app.all(
           .json({ status: "error", message: "Missing credentials" });
       }
 
-      /*const token = Buffer.from(
-        `_token=${_token}&growId=${growId}&password=${password}&reg=0`,
-      ).toString("base64");*/
-
       const token = jwt.sign(
         { growId: growId, password: password },
         JWT_SECRET,
         { expiresIn: "24h" },
       );
 
-      /*await fetch(
+      await fetch(
         "https://129.151.212.61/player/growid/login/validate?token=test",
         {
           method: "POST",
         },
-      );*/
+      );
 
       res.setHeader("Content-Type", "text/html");
       res.json({
