@@ -185,7 +185,7 @@ app.all(
       );
 
       res.send(
-        `{"status":"success","message":"Token is valid.","token":"${newToken}","url":"","accountType":"growtopia"}`,
+        `{"status":"success","message":"Account Validated.","token":"${newToken}","url":"","accountType":"growtopia"}`,
       );
     } catch (error) {
       console.log(`[ERROR]: ${error}`);
