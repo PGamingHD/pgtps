@@ -227,7 +227,7 @@ app.post("/player/signup", async (req: Request, res: Response) => {
     accountType: "growtopia",
   });
 
-  return res.set("Content-Type", "text/html").send(data);
+  return res.set("Content-Type", "text/html; charset=UTF-8").send(data);
 });
 
 app.listen(PORT, () => {
