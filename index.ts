@@ -219,7 +219,11 @@ app.all("/player/signup", async (req: Request, res: Response) => {
       { httpsAgent },
     );
 
-    return res.set("Content-Type", "text/html").send(axiosRes.data);
+    return res
+      .set("Content-Type", "text/html")
+      .send(
+        `{"status":"success","message":"Token is valid.","token":"${axiosRes.data.token}","url":"","accountType":"growtopia"}`,
+      );
   } catch (error) {
     console.log(`[ERROR]: ${error}`);
     res.status(500).json({
