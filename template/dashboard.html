@@ -1,255 +1,621 @@
 <!doctype html>
-<html lang="en">
+<html
+  lang="en"
+  style="background-color: rgba(0, 0, 0, 0); width: 100%; height: 100%"
+>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Growtopia - Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>PGTPS</title>
     <link
+      rel="icon"
+      type="image/png"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/images/growtopia.ico"
+      sizes="16x16"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/images/growtopia.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="icon"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/images/growtopia.ico"
+      type="image/x-icon"
+    />
+    <link
+      media="all"
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/css/faq-main.css"
+    />
+    <link
+      media="all"
+      rel="stylesheet"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/css/shop-custom.css"
+    />
+    <link
+      media="all"
+      rel="stylesheet"
+      href="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/assets/css/ingame-custom.css"
     />
     <style>
-      .active-tab {
-        border-bottom: 4px solid #81d4fa;
-        color: white;
+      .modal-backdrop {
+          background-color: rgba(0, 0, 0, 0.1);
+      !important
       }
-      .inactive-tab {
-        color: #87b8cc;
+
+      .modal-backdrop+div {
+          overflow: auto;
+      }
+
+      .modal-body,
+      .content {
+          padding: 0;
+      }
+
+      body {
+          font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      .modal-content {
+          background-color: rgba(17, 24, 39, 0.95);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(75, 85, 99, 0.5);
+          border-radius: 24px;
+          box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+          overflow: hidden;
+      }
+
+      .section-title h2 {
+          background: linear-gradient(to right, #4ade80, #3b82f6);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 800;
+          font-size: 32px;
+          text-transform: uppercase;
+          margin-bottom: 10px;
+          text-shadow: none;
+      }
+
+      .reg-box {
+          background: rgba(34, 197, 94, 0.1);
+          border: 1px solid rgba(34, 197, 94, 0.2);
+          border-radius: 16px;
+          padding: 15px;
+          margin-bottom: 25px;
+          max-width: 350px;
+          margin-left: auto;
+          margin-right: auto;
+      }
+
+      .reg-title {
+          color: #4ade80;
+          font-weight: 700;
+          font-size: 14px;
+          margin-bottom: 5px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+      }
+
+      .reg-text {
+          color: #d1d5db;
+          font-size: 13px;
+          line-height: 1.5;
+          margin: 0;
+      }
+
+      .form-control.grow-text {
+          background-color: rgba(31, 41, 55, 0.6);
+          border: 1px solid rgba(75, 85, 99, 0.6);
+          color: #fff;
+          border-radius: 12px;
+          height: 50px;
+          padding: 0 20px;
+          font-size: 16px;
+          transition: all 0.3s ease;
+          box-shadow: none;
+      }
+
+      .form-control.grow-text:focus {
+          background-color: rgba(31, 41, 55, 0.9);
+          border-color: #4ade80;
+          box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+      }
+
+      .form-control.grow-text::placeholder {
+          color: #9ca3af;
+      }
+
+      .btn-primary.grow-button {
+          background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
+          border: none;
+          border-radius: 12px;
+          height: 50px;
+          font-weight: 700;
+          font-size: 16px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+          transition: all 0.3s ease;
+          width: 100%;
+          margin-top: 10px;
+      }
+
+      .btn-primary.grow-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+          background: linear-gradient(135deg, #16a34a 0%, #2563eb 100%);
+      }
+
+      .discord-btn {
+          background: #5865F2 !important;
+          box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3) !important;
+          margin-top: 15px;
+      }
+
+      .discord-btn:hover {
+          background: #4752C4 !important;
+          box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4) !important;
+      }
+
+      .modal-body {
+          position: relative;
+          z-index: 1;
+      }
+      .modal-body::before {
+          content: '';
+          position: absolute;
+          top: -50px;
+          left: -50px;
+          width: 150px;
+          height: 150px;
+          background: rgba(34, 197, 94, 0.2);
+          filter: blur(60px);
+          border-radius: 50%;
+          z-index: -1;
+      }
+      .modal-body::after {
+          content: '';
+          position: absolute;
+          bottom: -50px;
+          right: -50px;
+          width: 150px;
+          height: 150px;
+          background: rgba(59, 130, 246, 0.2);
+          filter: blur(60px);
+          border-radius: 50%;
+          z-index: -1;
+      }
+
+      .nav-tabs {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 25px;
+          border: none;
+      }
+
+      .nav-tab {
+          background: rgba(31, 41, 55, 0.6);
+          border: 1px solid rgba(75, 85, 99, 0.6);
+          color: #9ca3af;
+          padding: 10px 20px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s;
+          font-weight: 600;
+          font-size: 14px;
+          outline: none !important;
+      }
+
+      .nav-tab:hover {
+          background: rgba(31, 41, 55, 0.9);
+          color: #fff;
+      }
+
+      .nav-tab.active {
+          background: rgba(34, 197, 94, 0.15);
+          border-color: #4ade80;
+          color: #4ade80;
+          box-shadow: 0 0 15px rgba(34, 197, 94, 0.1);
+      }
+
+      ::-webkit-scrollbar {
+          display: none;
+      }
+      body {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+
+      .eye-inside {
+          position:absolute;
+          right:18px;
+          top:50%;
+          transform:translateY(-50%);
+          width:22px;
+          height:22px;
+          stroke:#d1d5db;
+          cursor:pointer;
+          opacity:0.8;
+      }
+      .eye-inside:hover {
+          opacity:1;
       }
     </style>
   </head>
 
-  <body class="flex flex-col items-center justify-center h-screen bg-[#1a2e3e]">
-    <div class="fixed inset-0 flex justify-center items-start pt-8">
-      <div
-        id="mainModal"
-        class="relative bg-[#2b4d6d] border-4 border-[#87b8cc] shadow-lg p-6 w-3/5 max-w-lg sm:w-4/5 xs:w-11/12 min-h-[350px] rounded-lg flex flex-col opacity-0 translate-y-[-20px] transition-all duration-700 ease-out"
-      >
-        <div class="flex justify-around mb-4 border-b border-[#87b8cc]/30">
-          <button
-            id="tabLogin"
-            class="pb-2 font-bold uppercase tracking-wider active-tab transition-all"
-          >
-            Login
-          </button>
-          <button
-            id="tabRegister"
-            class="pb-2 font-bold uppercase tracking-wider inactive-tab transition-all"
-          >
-            Register
-          </button>
+  <body style="background-color: rgba(0, 0, 0, 0)">
+    <button
+      type="button"
+      class="btn btn-primary hidden"
+      data-toggle="modal"
+      id="modalButton"
+      data-target="#modalShow"
+      data-backdrop="static"
+      data-keyboard="false"
+    ></button>
+    <div class="content">
+      <section class="common-box">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+              <div class="row">
+                <div
+                  class="modal fade product-list-popup"
+                  id="modalShow"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-hidden="false"
+                >
+                  <div
+                    class="modal-dialog modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        <div class="content">
+                          <section class="common-box">
+                            <div class="container" style="padding: 30px">
+                              <div
+                                class="section-title center-align text-center"
+                              >
+                                <h2>LegacyGT Login</h2>
+                                <p style="color: #9ca3af; margin-bottom: 25px">
+                                  Welcome back! Please login to continue.
+                                </p>
+                              </div>
+                              <div class="row div-content-center">
+                                <div class="col-md-12 col-sm-12">
+                                  <div class="nav-tabs">
+                                    <button
+                                      class="nav-tab active"
+                                      onclick="switchTab('login')"
+                                      data-tab="login"
+                                    >
+                                      Login
+                                    </button>
+                                    <button
+                                      class="nav-tab"
+                                      onclick="switchTab('register')"
+                                      data-tab="register"
+                                    >
+                                      Register
+                                    </button>
+                                    <button
+                                      class="nav-tab"
+                                      onclick="switchTab('discord')"
+                                      data-tab="discord"
+                                    >
+                                      Discord
+                                    </button>
+                                  </div>
+
+                                  <div id="login-section">
+                                    <form
+                                      method="POST"
+                                      action="https://129.151.212.61/player/growid/login/validate"
+                                      accept-charset="UTF-8"
+                                      class=""
+                                      role="form"
+                                      required="required"
+                                      autocomplete="off"
+                                    >
+                                      <input
+                                        name="_token"
+                                        type="hidden"
+                                        value="{{tokenPlaceholder}}"
+                                      />
+                                      <input
+                                        name="server"
+                                        type="hidden"
+                                        value="LegacyGT"
+                                      />
+                                      <div class="form-group">
+                                        <input
+                                          id="login-name"
+                                          class="form-control grow-text"
+                                          placeholder="GrowID Name"
+                                          name="growId"
+                                          type="text"
+                                          required
+                                        />
+                                      </div>
+
+                                      <div
+                                        class="form-group"
+                                        style="position: relative"
+                                      >
+                                        <input
+                                          id="password"
+                                          class="form-control grow-text"
+                                          placeholder="GrowID Password"
+                                          name="password"
+                                          type="password"
+                                          value=""
+                                          required
+                                        />
+                                        <svg
+                                          onclick="togglePassword()"
+                                          id="eye-icon"
+                                          class="eye-inside"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke-width="2"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                        >
+                                          <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"
+                                            stroke="currentColor"
+                                          ></path>
+                                        </svg>
+                                      </div>
+
+                                      <div
+                                        class="form-group text-center"
+                                        style="margin-top: 20px"
+                                      >
+                                        <input
+                                          class="btn btn-lg btn-primary grow-button"
+                                          type="submit"
+                                          name="action"
+                                          value="Log in"
+                                        />
+                                      </div>
+                                    </form>
+                                  </div>
+
+                                  <div
+                                    id="register-section"
+                                    style="display: none"
+                                  >
+                                    <form
+                                      method="POST"
+                                      action="https://129.151.212.61/player/growid/login/validate"
+                                      accept-charset="UTF-8"
+                                      class=""
+                                      role="form"
+                                      required="required"
+                                      autocomplete="off"
+                                    >
+                                      <input
+                                        name="_token"
+                                        type="hidden"
+                                        value="{{tokenPlaceholder}}"
+                                      />
+                                      <input
+                                        name="server"
+                                        type="hidden"
+                                        value="LegacyGT"
+                                      />
+                                      <div class="form-group">
+                                        <input
+                                          id="reg-name"
+                                          class="form-control grow-text"
+                                          placeholder="Desired GrowID"
+                                          name="growId"
+                                          type="text"
+                                          required
+                                        />
+                                      </div>
+                                      <div
+                                        class="form-group text-center"
+                                        style="margin-top: 20px"
+                                      >
+                                        <input
+                                          class="btn btn-lg btn-primary grow-button"
+                                          type="submit"
+                                          name="action"
+                                          value="Register"
+                                        />
+                                      </div>
+                                    </form>
+                                    <div
+                                      class="reg-box text-center"
+                                      style="margin-top: 15px"
+                                    >
+                                      <p class="reg-title">
+                                        ⚠️ Registration Info
+                                      </p>
+                                      <p class="reg-text">
+                                        To register, open the
+                                        <strong>Pause Menu</strong> in-game and
+                                        click <strong>"Get GrowID"</strong>.
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    id="discord-section"
+                                    style="display: none"
+                                  >
+                                    <div
+                                      class="text-center"
+                                      style="padding: 20px 0"
+                                    >
+                                      <p
+                                        style="
+                                          color: #d1d5db;
+                                          margin-bottom: 20px;
+                                          font-size: 14px;
+                                        "
+                                      >
+                                        Join our community for support, trading,
+                                        and updates!
+                                      </p>
+                                      <a
+                                        href="https://discord.gg/JQvSB89eKw"
+                                        target="_blank"
+                                        class="btn btn-lg btn-primary grow-button discord-btn"
+                                        style="
+                                          display: block;
+                                          text-decoration: none;
+                                          margin-top: 0;
+                                        "
+                                        >Join Discord</a
+                                      >
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </section>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div
-          id="errorDiv"
-          class="hidden flex flex-col mb-2 text-xs text-red-400 font-bold px-2 py-1 bg-black/20 rounded border border-red-400/50"
-        >
-          <span id="errorMessage"></span>
-        </div>
-
-        <form
-          method="post"
-          action="/player/growid/login/validate"
-          id="loginForm"
-          class="space-y-3"
-        >
-          <input name="type" value="log" type="hidden" />
-          <input name="_token" value="{{ data }}" type="hidden" />
-
-          <div>
-            <label class="block text-white text-xs mb-1">GrowID</label>
-            <div
-              class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-2 py-1"
-            >
-              <i class="fas fa-user text-white mr-2 text-xs"></i>
-              <input
-                type="text"
-                name="growId"
-                id="loginGrowId"
-                class="w-full bg-transparent text-white text-xs focus:outline-none"
-                placeholder="Enter GrowID"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-white text-xs mb-1">Password</label>
-            <div
-              class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-2 py-1"
-            >
-              <i class="fas fa-lock text-white mr-2 text-xs"></i>
-              <input
-                type="password"
-                name="password"
-                id="loginPassword"
-                class="w-full bg-transparent text-white text-xs focus:outline-none"
-                placeholder="Enter Password"
-              />
-              <button
-                type="button"
-                class="togglePassword text-white ml-2 text-xs"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="flex justify-end pt-2">
-            <button
-              id="loginButton"
-              class="px-6 py-2 rounded bg-[#00b8ff] text-white text-xs font-bold hover:bg-[#06a4dd] transition transform hover:scale-105"
-            >
-              LOG IN
-            </button>
-          </div>
-        </form>
-
-        <form
-          method="post"
-          action="/player/growid/register/validate"
-          id="registerForm"
-          class="hidden space-y-3"
-        >
-          <input name="type" value="reg" type="hidden" />
-
-          <div>
-            <label class="block text-white text-xs mb-1">Desired GrowID</label>
-            <div
-              class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-2 py-1"
-            >
-              <i class="fas fa-user-plus text-white mr-2 text-xs"></i>
-              <input
-                type="text"
-                name="growId"
-                id="regGrowId"
-                class="w-full bg-transparent text-white text-xs focus:outline-none"
-                placeholder="Choose a name"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-white text-xs mb-1"
-              >Email (Optional)</label
-            >
-            <div
-              class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-2 py-1"
-            >
-              <i class="fas fa-envelope text-white mr-2 text-xs"></i>
-              <input
-                type="email"
-                name="email"
-                class="w-full bg-transparent text-white text-xs focus:outline-none"
-                placeholder="email@example.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-white text-xs mb-1">Password</label>
-            <div
-              class="flex items-center border-2 border-[#81d4fa] rounded bg-[#2b4d6d] px-2 py-1"
-            >
-              <i class="fas fa-lock text-white mr-2 text-xs"></i>
-              <input
-                type="password"
-                name="password"
-                id="regPassword"
-                class="w-full bg-transparent text-white text-xs focus:outline-none"
-                placeholder="Create password"
-              />
-            </div>
-          </div>
-
-          <div class="flex justify-end pt-2">
-            <button
-              id="registerButton"
-              class="px-6 py-2 rounded bg-[#4caf50] text-white text-xs font-bold hover:bg-[#43a047] transition transform hover:scale-105"
-            >
-              CREATE ACCOUNT
-            </button>
-          </div>
-        </form>
-      </div>
+      </section>
     </div>
+  </body>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("mainModal");
-        const tabLogin = document.getElementById("tabLogin");
-        const tabRegister = document.getElementById("tabRegister");
-        const loginForm = document.getElementById("loginForm");
-        const registerForm = document.getElementById("registerForm");
-        const errorDiv = document.getElementById("errorDiv");
+  <script src="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/vendors/jquery/jquery-2.1.4.min.js"></script>
+  <script src="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/vendors/bootstrap/javascripts/bootstrap.min.js"></script>
 
-        // Initial Animation
-        setTimeout(() => {
-          modal.classList.remove("opacity-0", "translate-y-[-20px]");
-        }, 100);
+  <script>
+    // Anti Emoji + Anti Simbol
+    /*function blockInvalidChars(input) {
+        input.value = input.value.replace(/[^a-zA-Z0-9]/g, "");
+    }
+    document.getElementById("login-name").addEventListener("input", function(){ blockInvalidChars(this); });
+    document.getElementById("password").addEventListener("input", function(){ blockInvalidChars(this); });
+    document.getElementById("reg-name").addEventListener("input", function(){ blockInvalidChars(this); });*/
 
-        // Tab Switching Logic
-        tabLogin.addEventListener("click", () => {
-          tabLogin.className =
-            "pb-2 font-bold uppercase tracking-wider active-tab transition-all";
-          tabRegister.className =
-            "pb-2 font-bold uppercase tracking-wider inactive-tab transition-all";
-          loginForm.classList.remove("hidden");
-          registerForm.classList.add("hidden");
-          errorDiv.classList.add("hidden");
+    // Toggle password
+    function togglePassword() {
+      const pwd = document.getElementById("password");
+      const icon = document.getElementById("eye-icon");
+
+      if (pwd.type === "password") {
+        pwd.type = "text";
+        icon.innerHTML =
+          '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke="currentColor"/><circle cx="12" cy="12" r="3" stroke="currentColor"/>';
+      } else {
+        pwd.type = "password";
+        icon.innerHTML =
+          '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22" stroke="currentColor"></path>';
+      }
+    }
+
+    function switchTab(tab) {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("register-section").style.display = "none";
+      document.getElementById("discord-section").style.display = "none";
+
+      var tabs = document.getElementsByClassName("nav-tab");
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove("active");
+      }
+
+      document.getElementById(tab + "-section").style.display = "block";
+      document
+        .querySelector('.nav-tab[data-tab="' + tab + '"]')
+        .classList.add("active");
+    }
+
+    document.querySelectorAll("form").forEach((form) => {
+      form.addEventListener("submit", function (e) {
+        const inputs = this.querySelectorAll("input[required]");
+        let isValid = true;
+
+        inputs.forEach((input) => {
+          if (!input.value.trim()) {
+            isValid = false;
+            input.style.borderColor = "#ef4444";
+            input.classList.add("shake-animation");
+
+            setTimeout(() => {
+              input.style.borderColor = "rgba(75, 85, 99, 0.6)";
+            }, 2000);
+          }
         });
 
-        tabRegister.addEventListener("click", () => {
-          tabRegister.className =
-            "pb-2 font-bold uppercase tracking-wider active-tab transition-all";
-          tabLogin.className =
-            "pb-2 font-bold uppercase tracking-wider inactive-tab transition-all";
-          registerForm.classList.remove("hidden");
-          loginForm.classList.add("hidden");
-          errorDiv.classList.add("hidden");
-        });
-
-        // Password Toggle
-        document.querySelectorAll(".togglePassword").forEach((btn) => {
-          btn.addEventListener("click", function () {
-            const input = this.previousElementSibling;
-            const type =
-              input.getAttribute("type") === "password" ? "text" : "password";
-            input.setAttribute("type", type);
-            this.innerHTML =
-              type === "password"
-                ? '<i class="fas fa-eye"></i>'
-                : '<i class="fas fa-eye-slash"></i>';
-          });
-        });
-
-        // Basic Validation for Login
-        document
-          .getElementById("loginButton")
-          .addEventListener("click", function (e) {
-            e.preventDefault();
-            const user = document.getElementById("loginGrowId").value;
-            const pass = document.getElementById("loginPassword").value;
-
-            if (user.length < 4 || pass.length < 4) {
-              showError("ID and Password must be at least 4 characters.");
-            } else {
-              localStorage.setItem("growId", user);
-              loginForm.submit();
-            }
-          });
-
-        function showError(msg) {
-          errorDiv.classList.remove("hidden");
-          document.getElementById("errorMessage").innerText = msg;
-        }
-
-        // Fill saved GrowID
-        if (localStorage.getItem("growId")) {
-          document.getElementById("loginGrowId").value =
-            localStorage.getItem("growId");
+        if (!isValid) {
+          e.preventDefault();
         }
       });
-    </script>
-  </body>
+    });
+  </script>
+
+  <script>
+    $("document").ready(function () {
+      document.onkeydown = (e) => {
+        if (e.key == 123) {
+          e.preventDefault();
+        }
+        if (e.key == "F12") {
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key == "I") {
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.key == "I") {
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key == "C") {
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key == "J") {
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.key == "U") {
+          e.preventDefault();
+        }
+      };
+      $("#modalButton").trigger("click");
+      $(".close").on("click", function () {
+        window.location = "https://129.151.212.61/player/validate/close";
+      });
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          for (var i = 0; i < mutation.addedNodes.length; i++) {
+            if (mutation.addedNodes[i].tagName == "DIV") {
+              var thediv = mutation.addedNodes[i];
+              var sw = window.screen.width;
+              if (sw < 667) {
+                $(thediv).css({
+                  transform: "scale(0.75)",
+                  "transform-origin": "0 0",
+                  "-webkit-transform": "scale(0.75)",
+                  "-webkit-transform-origin": "0 0",
+                  overflow: "auto",
+                });
+              }
+            }
+          }
+        });
+      });
+      observer.observe(document.body, {
+        attributes: false,
+        childList: true,
+        characterData: false,
+      });
+    });
+  </script>
 </html>
