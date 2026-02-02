@@ -217,7 +217,8 @@ app.post("/player/signup", async (req: Request, res: Response) => {
     body: { data: { growId, password, confirmPassword } },
   });
 
-  res.status(axiosRes.status).json(axiosRes.data);
+  //res.status(axiosRes.status).json(axiosRes.data);
+  res.status(200).json({ status: "success", message: "Signup successful" });
 });
 
 app.listen(PORT, () => {
