@@ -107,7 +107,7 @@ app.all(
         `_token=${_token}&growId=${growId}&password=${password}&reg=0`,
       ).toString("base64");
 
-      await fetch("https://129.151.212.61/api/testing");
+      await fetch("https://129.151.212.61/player/growid/login/validate");
 
       res.setHeader("Content-Type", "text/html");
       res.json({
