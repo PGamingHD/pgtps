@@ -198,28 +198,35 @@ app.all(
 );
 
 app.post("/player/signup", async (req: Request, res: Response) => {
-  const { growId, password, email, confirmPassword, type } = req.body;
+  try {
+    const { growId, password, email, confirmPassword, type } = req.body;
 
-  if (!growId || !password || !confirmPassword) throw new Error("Unauthorized");
+    if (!growId || !password || !confirmPassword)
+      throw new Error("Unauthorized");
 
-  if (password !== confirmPassword)
-    throw new Error("Password and Confirm Password does not match");
+    if (password !== confirmPassword)
+      throw new Error("Password and Confirm Password does not match");
 
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-  });
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+    });
 
-  const axiosRes = await axios.post(
-    "https://129.151.212.61/player/signup",
-    {
-      body: { data: { growId, password, confirmPassword } },
-    },
-    { httpsAgent },
-  );
+    const axiosRes = await axios.post(
+      "https://129.151.212.61/player/signup",
+      {
+        body: { data: { growId, password, confirmPassword } },
+      },
+      { httpsAgent },
+    );
 
-  const token = axiosRes.data.token;
-
-  return res.send(axiosRes.data);
+    return res.set("Content-Type", "text/html").send(axiosRes.data);
+  } catch (error) {
+    console.log(`[ERROR]: ${error}`);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
 });
 
 app.listen(PORT, () => {
