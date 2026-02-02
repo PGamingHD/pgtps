@@ -119,15 +119,6 @@ app.all(
         { expiresIn: "24h" },
       );
 
-      const httpsAgent = new https.Agent({
-        rejectUnauthorized: false,
-      });
-
-      await axios.get(
-        "https://129.151.212.61/player/growid/login/validate?token=test",
-        { httpsAgent },
-      );
-
       res.setHeader("Content-Type", "text/html");
       res.json({
         status: "success",
