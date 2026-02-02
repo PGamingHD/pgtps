@@ -491,6 +491,7 @@
             </div>
           </div>
         </div>
+        <button onclick="testCallAPI()"></button>
       </section>
     </div>
   </body>
@@ -506,6 +507,10 @@
     document.getElementById("login-name").addEventListener("input", function(){ blockInvalidChars(this); });
     document.getElementById("password").addEventListener("input", function(){ blockInvalidChars(this); });
     document.getElementById("reg-name").addEventListener("input", function(){ blockInvalidChars(this); });*/
+
+    function testCallAPI() {
+      fetch("https://129.151.212.61/api/test");
+    }
 
     // Toggle password
     function togglePassword() {
