@@ -10,6 +10,7 @@ import https from "https";
 const app = express();
 const PORT = 3000;
 const JWT_SECRET = (process.env.JWT_SECRET as string) || "supersecretkey";
+const API_URL = (process.env.API_URL as string) || "https://example.com/api";
 
 // @note trust proxy - set to number of proxies in front of app
 app.set("trust proxy", 1);
@@ -212,7 +213,7 @@ app.all("/player/signup", async (req: Request, res: Response) => {
     });
 
     const axiosRes = await axios.post(
-      "https://129.151.212.61/player/signup",
+      API_URL,
       {
         body: { data: { growId, password, confirmPassword } },
       },
