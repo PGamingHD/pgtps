@@ -198,10 +198,10 @@ app.all(
 );
 
 app.post("/player/signup", async (req: Request, res: Response) => {
-  const body = await req.body;
-  const growId = body.data?.growId;
-  const password = body.data?.password;
-  const confirmPassword = body.data?.confirmPassword;
+  const body = req.body;
+  const growId = body?.data?.growId;
+  const password = body?.data?.password;
+  const confirmPassword = body?.data?.confirmPassword;
 
   if (!growId || !password || !confirmPassword) throw new Error("Unauthorized");
 
