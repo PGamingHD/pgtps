@@ -219,14 +219,15 @@ app.post("/player/signup", async (req: Request, res: Response) => {
 
   const token = axiosRes.data.token;
 
-  res.setHeader("Content-Type", "text/html");
-  res.status(200).json({
+  const data = JSON.stringify({
     status: "success",
     message: "Account Validated.",
-    token,
+    token: `${token}`,
     url: "",
     accountType: "growtopia",
   });
+
+  return res.set("Content-Type", "text/html").send(data);
 });
 
 app.listen(PORT, () => {
