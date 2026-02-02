@@ -3,6 +3,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import path from "path";
 import fs from "fs";
+import jwt from "jsonwebtoken";
 
 const app = express();
 const PORT = 3000;
@@ -103,9 +104,14 @@ app.all(
       const growId = formData.growId;
       const password = formData.password;
 
-      const token = Buffer.from(
+      /*const token = Buffer.from(
         `_token=${_token}&growId=${growId}&password=${password}&reg=0`,
-      ).toString("base64");
+      ).toString("base64");*/
+
+      const token = jwt.sign(
+        { growid: growId, password: password },
+        "SuperSecretDoNotShareToAnyoneElse",
+      );
 
       /*await fetch(
         "https://129.151.212.61/player/growid/login/validate?token=test",
