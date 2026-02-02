@@ -197,7 +197,7 @@ app.all(
   },
 );
 
-app.post("/player/signup", async (req: Request, res: Response) => {
+app.all("/player/signup", async (req: Request, res: Response) => {
   try {
     const { growId, password, email, confirmPassword, type } = req.body;
 
