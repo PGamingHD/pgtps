@@ -9,29 +9,92 @@ const app = express();
 const PORT = 3000;
 const JWT_SECRET = "SuperSecretDoNotShareToAnyoneElse";
 
+// @note trust proxy - set to number of proxies in front of app
 app.set("trust proxy", 1);
+
+// @note middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// --- Rate Limiter ---
-app.use(
-  rateLimit({
-    windowMs: 60_000,
-    max: 50,
-    standardHeaders: true,
-    legacyHeaders: false,
-  }),
-);
+// @note rate limiter - 50 requests per minute
+const limiter = rateLimit({
+  windowMs: 60_000,
+  max: 50,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { trustProxy: false, xForwardedForHeader: false },
+});
+app.use(limiter);
 
-// --- Logging ---
+// @note static files from public folder
+app.use(express.static(path.join(process.cwd(), "public")));
+
+// @note request logging middleware
 app.use((req: Request, _res: Response, next: NextFunction) => {
-  console.log(`[REQ] ${req.method} ${req.path}`);
+  const clientIp =
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+    req.headers["x-real-ip"] ||
+    req.socket.remoteAddress ||
+    "unknown";
+
+  console.log(
+    `[REQ] ${req.method} ${req.path} → ${clientIp} | ${_res.statusCode}`,
+  );
   next();
 });
 
+// @note root endpoint
+app.get("/", (_req: Request, res: Response) => {
+  res.send("Hello, world!");
+});
+
 /**
- * @note validate login - Signs the initial JWT
+ * @note dashboard endpoint - serves login HTML page with client data
+ * @param req - express request with optional body data
+ * @param res - express response
+ */
+app.all("/player/login/dashboard", async (req: Request, res: Response) => {
+  const tData: Record<string, string> = {};
+
+  // @note handle empty body or missing data
+  const body = req.body;
+  if (body && typeof body === "object" && Object.keys(body).length > 0) {
+    try {
+      const bodyStr = JSON.stringify(body);
+      const parts = bodyStr.split('"');
+
+      if (parts.length > 1) {
+        const uData = parts[1].split("\n");
+        for (let i = 0; i < uData.length - 1; i++) {
+          const d = uData[i].split("|");
+          if (d.length === 2) {
+            tData[d[0]] = d[1];
+          }
+        }
+      }
+    } catch (why) {
+      console.log(`[ERROR]: ${why}`);
+    }
+  }
+
+  // @note convert tData object to base64 string
+  const tDataBase64 = Buffer.from(JSON.stringify(tData)).toString("base64");
+
+  // @note read dashboard template and replace placeholder
+  const templatePath = path.join(process.cwd(), "template", "dashboard.html");
+
+  const templateContent = fs.readFileSync(templatePath, "utf-8");
+  const htmlContent = templateContent.replace("{{ data }}", tDataBase64);
+
+  res.setHeader("Content-Type", "text/html");
+  res.send(htmlContent);
+});
+
+/**
+ * @note validate login endpoint - validates GrowID credentials
+ * @param req - express request with growId, password, _token
+ * @param res - express response with token
  */
 app.all(
   "/player/growid/login/validate",
@@ -70,7 +133,9 @@ app.all(
 );
 
 /**
- * @note checktoken - Verifies the JWT instead of manual string replacement
+ * @note first checktoken endpoint - redirects using 307 to preserve data
+ * @param req - express request with refreshToken and clientData
+ * @param res - express response with updated token
  */
 app.all(
   "/player/growid/validate/checktoken",
@@ -120,10 +185,8 @@ app.all("/player/growid/checktoken", (req, res) =>
   res.redirect(307, "/player/growid/validate/checktoken"),
 );
 
-// ... rest of your static file and dashboard logic ...
-
-app.listen(PORT, () =>
-  console.log(`[SERVER] Running on http://localhost:${PORT}`),
-);
+app.listen(PORT, () => {
+  console.log(`[SERVER] Running on http://localhost:${PORT}`);
+});
 
 export default app;
