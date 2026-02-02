@@ -50,6 +50,12 @@ app.get("/", (_req: Request, res: Response) => {
   res.send("Hello, world!");
 });
 
+app.get("/debug-env", (_req: Request, res: Response) => {
+  res.json({
+    JWT_SECRET: JWT_SECRET,
+  });
+});
+
 /**
  * @note dashboard endpoint - serves login HTML page with client data
  * @param req - express request with optional body data
