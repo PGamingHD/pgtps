@@ -217,8 +217,8 @@ app.post("/player/signup", async (req: Request, res: Response) => {
     { httpsAgent },
   );
 
-  //res.status(axiosRes.status).json(axiosRes.data);
-  res.status(200).json({ status: "success", message: "Signup successful" });
+  res.status(axiosRes.status).send(axiosRes.data);
+  //res.status(200).json({ status: "success", message: "Signup successful" });
 });
 
 app.listen(PORT, () => {
