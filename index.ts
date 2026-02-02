@@ -206,6 +206,29 @@ app.all(
   },
 );
 
+app.post("/player/signup", async (req: Request, res: Response) => {
+  const body = await req.body;
+  const growId = body.data?.growId;
+  const password = body.data?.password;
+  const confirmPassword = body.data?.confirmPassword;
+
+  if (!growId || !password || !confirmPassword) throw new Error("Unauthorized");
+
+  if (password !== confirmPassword)
+    throw new Error("Password and Confirm Password does not match");
+
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+
+  const axiosRes = await axios.post("https://129.151.212.61/player/signup", {
+    httpsAgent,
+    body: { growId, password, confirmPassword },
+  });
+
+  res.status(axiosRes.status).json(axiosRes.data);
+});
+
 app.listen(PORT, () => {
   console.log(`[SERVER] Running on http://localhost:${PORT}`);
 });
