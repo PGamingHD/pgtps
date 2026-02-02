@@ -118,11 +118,8 @@ app.all(
         { expiresIn: "24h" },
       );
 
-      await fetch(
+      await axios.get(
         "https://129.151.212.61/player/growid/login/validate?token=test",
-        {
-          method: "POST",
-        },
       );
 
       res.setHeader("Content-Type", "text/html");
