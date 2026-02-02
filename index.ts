@@ -8,7 +8,7 @@ import axios from "axios";
 
 const app = express();
 const PORT = 3000;
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = (process.env.JWT_SECRET as string) || "supersecretkey";
 
 // @note trust proxy - set to number of proxies in front of app
 app.set("trust proxy", 1);
@@ -121,16 +121,6 @@ app.all(
         JWT_SECRET,
         { expiresIn: "24h" },
       );
-
-      const aRes = await axios.post(
-        "https://129.151.212.61:8080/player/login/validate",
-        {
-          growId: "heyhey",
-          password: "heyhey123",
-        },
-      );
-
-      console.log(aRes);
 
       /*await fetch(
         "https://129.151.212.61/player/growid/login/validate?token=test",
