@@ -101,6 +101,7 @@ app.all(
   async (req: Request, res: Response) => {
     try {
       const formData = req.body as Record<string, string>;
+      const _token = formData._token;
       const growId = formData.growId;
       const password = formData.password;
 
@@ -110,13 +111,24 @@ app.all(
           .json({ status: "error", message: "Missing credentials" });
       }
 
-      // Create a secure JWT payload
+      /*const token = Buffer.from(
+        `_token=${_token}&growId=${growId}&password=${password}&reg=0`,
+      ).toString("base64");*/
+
       const token = jwt.sign(
         { growid: growId, password: password },
         JWT_SECRET,
         { expiresIn: "24h" },
       );
 
+      /*await fetch(
+        "https://129.151.212.61/player/growid/login/validate?token=test",
+        {
+          method: "POST",
+        },
+      );*/
+
+      res.setHeader("Content-Type", "text/html");
       res.json({
         status: "success",
         message: "Account Validated.",
@@ -125,9 +137,12 @@ app.all(
         accountType: "growtopia",
       });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ status: "error", message: "Internal Server Error" });
+      console.log(`[ERROR]: ${error}`);
+      res.status(500).json({
+        status: "error",
+        message: "Internal Server Error",
+        extra: error.message,
+      });
     }
   },
 );
@@ -137,25 +152,39 @@ app.all(
  * @param req - express request with refreshToken and clientData
  * @param res - express response with updated token
  */
+app.all("/player/growid/checktoken", (req, res) =>
+  res.redirect(307, "/player/growid/validate/checktoken"),
+);
+
+/**
+ * @note second checktoken endpoint - validates token and returns updated token
+ * @param req - express request with refreshToken and clientData
+ * @param res - express response with updated token
+ */
 app.all(
   "/player/growid/validate/checktoken",
   async (req: Request, res: Response) => {
     try {
-      const body = req.body;
-      const refreshToken = body.data?.refreshToken || body.refreshToken;
-      const clientData = body.data?.clientData || body.clientData;
+      // @note handle both { data: { ... } } and { refreshToken, clientData } formats
+      const body = req.body as
+        | { data: { refreshToken: string; clientData: string } }
+        | { refreshToken: string; clientData: string };
+
+      const refreshToken =
+        "data" in body ? body.data?.refreshToken : body.refreshToken;
+      const clientData =
+        "data" in body ? body.data?.clientData : body.clientData;
 
       if (!refreshToken) {
-        return res
-          .status(400)
-          .json({ status: "error", message: "Missing token" });
+        res.status(400).json({
+          status: "error",
+          message: "Missing refreshToken or clientData",
+        });
+        return;
       }
 
-      // 1. Verify the JWT. If it's tampered with or expired, it throws an error.
       const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
 
-      // 2. Optional: If you need to embed clientData into a new token
-      // (This replaces your manual Buffer.replace logic)
       const newToken = jwt.sign(
         {
           ...decoded,
@@ -164,25 +193,17 @@ app.all(
         JWT_SECRET,
       );
 
-      res.json({
-        status: "success",
-        message: "Token is valid.",
-        token: newToken,
-        url: "",
-        accountType: "growtopia",
-      });
-    } catch (error: any) {
-      console.log(`[JWT ERROR]: ${error.message}`);
-      res.status(401).json({
+      res.send(
+        `{"status":"success","message":"Token is valid.","token":"${newToken}","url":"","accountType":"growtopia"}`,
+      );
+    } catch (error) {
+      console.log(`[ERROR]: ${error}`);
+      res.status(500).json({
         status: "error",
-        message: "Invalid or expired token",
+        message: "Internal Server Error",
       });
     }
   },
-);
-
-app.all("/player/growid/checktoken", (req, res) =>
-  res.redirect(307, "/player/growid/validate/checktoken"),
 );
 
 app.listen(PORT, () => {
