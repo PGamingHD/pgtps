@@ -116,7 +116,7 @@ app.all(
       ).toString("base64");*/
 
       const token = jwt.sign(
-        { growid: growId, password: password },
+        { growId: growId, password: password },
         JWT_SECRET,
         { expiresIn: "24h" },
       );
