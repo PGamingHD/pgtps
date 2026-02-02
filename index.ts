@@ -122,11 +122,12 @@ app.all(
         url: "",
         accountType: "growtopia",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(`[ERROR]: ${error}`);
       res.status(500).json({
         status: "error",
         message: "Internal Server Error",
+        extra: error.message,
       });
     }
   },
